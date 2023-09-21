@@ -1,0 +1,30 @@
+- hosts: "{{ host }}"
+  remote_user: ubuntu
+  vars:
+    GIT_REPO: https://github.com/aravindsuram/test.git
+    GIT_BRANCH: main
+    USER: ubuntu
+    PROJECT_NAME: aravind
+  gather_facts: no
+
+  tasks:
+    - name: Clone a private repository into {{PROJECT_NAME}} folder.
+      git:
+        repo: "{{ GIT_REPO }}"
+        version: "{{ GIT_BRANCH }}"
+        dest: "/home/{{ USER }}/{{ PROJECT_NAME }}"
+        accept_hostkey: yes
+      become: no
+    - name: Building the docker image
+      shell:
+        chdir: "/home/{{ USER }}/{{ PROJECT_NAME }}/docker"
+        cmd: docker build -t test .
+    - name: Running the Docker image
+      shell:
+        chdir: "/home/{{ USER }}/{{ PROJECT_NAME }}/docker" 
+        cmd:  docker-compose up -d
+    - name: Removing the Cloned Repo File
+      file:
+        state: absent
+        path: "/home/{{ USER }}/{{ PROJECT_NAME }}"
+        
