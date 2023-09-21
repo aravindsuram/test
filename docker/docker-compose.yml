@@ -1,0 +1,14 @@
+version: '3'
+
+networks:
+  my_custom_network:
+    driver: bridge
+
+services:
+  my_service:
+    image: test
+    ports:
+      - "5000:5000"
+    cpus: 1
+    networks:
+      - my_custom_network
